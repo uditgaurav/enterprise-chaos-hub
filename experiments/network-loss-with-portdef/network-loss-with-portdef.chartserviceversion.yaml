@@ -1,0 +1,32 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChartServiceVersion
+metadata:
+  annotations:
+    categories: ""
+    chartDescription: ""
+    createdAt: ""
+    repository: ""
+    support: ""
+    vendor: ""
+  name: network-loss-with-portdef
+packageInfo:
+  experiments: null
+  packageName: ""
+spec:
+  categoryDescription: ""
+  displayName: network-loss-with-portdef
+  experiments: null
+  faults:
+  - description: ""
+    displayName: ""
+    name: pod-network-loss-xtw
+    plan: null
+  - description: ""
+    displayName: ""
+    name: pod-network-loss-xtw
+    plan: null
+  keywords: []
+  plan: null
+  provider:
+    name: ""
+  scenarios: null
