@@ -1,0 +1,256 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  creationTimestamp: null
+  labels:
+    subject: node-cpu-hog_litmus
+  name: node-cpu-hog-1658468946
+  namespace: boutique
+spec:
+  arguments:
+    parameters:
+    - name: adminModeNamespace
+      value: boutique
+  entrypoint: custom-chaos
+  podGC:
+    strategy: OnWorkflowCompletion
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: argo-chaos
+  templates:
+  - inputs: {}
+    metadata: {}
+    name: custom-chaos
+    outputs: {}
+    steps:
+    - - arguments: {}
+        name: install-chaos-faults
+        template: install-chaos-faults
+    - - arguments: {}
+        name: node-cpu-hog-epg
+        template: node-cpu-hog-epg
+    - - arguments: {}
+        name: cleanup-chaos-resources
+        template: cleanup-chaos-resources
+  - container:
+      args:
+      - kubectl apply -f /tmp/ -n {{workflow.parameters.adminModeNamespace}} && sleep
+        30
+      command:
+      - sh
+      - -c
+      image: docker.io/chaosnative/k8s:1.15.0
+      name: ""
+      resources: {}
+    inputs:
+      artifacts:
+      - name: node-cpu-hog-epg
+        path: /tmp/node-cpu-hog-epg.yaml
+        raw:
+          data: |
+            apiVersion: litmuschaos.io/v1alpha1
+            description:
+              message: |
+                Introduce CPU spike on a given node for a certain chaos duration.
+            kind: ChaosExperiment
+            metadata:
+              name: node-cpu-hog
+              labels:
+                name: node-cpu-hog
+                app.kubernetes.io/part-of: litmus
+                app.kubernetes.io/component: chaosexperiment
+                app.kubernetes.io/version: ci
+            spec:
+              definition:
+                scope: Cluster
+                permissions:
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - pods
+                    verbs:
+                      - create
+                      - delete
+                      - get
+                      - list
+                      - patch
+                      - update
+                      - deletecollection
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - events
+                    verbs:
+                      - create
+                      - get
+                      - list
+                      - patch
+                      - update
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - configmaps
+                    verbs:
+                      - get
+                      - list
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - pods/log
+                    verbs:
+                      - get
+                      - list
+                      - watch
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - pods/exec
+                    verbs:
+                      - get
+                      - list
+                      - create
+                  - apiGroups:
+                      - batch
+                    resources:
+                      - jobs
+                    verbs:
+                      - create
+                      - list
+                      - get
+                      - delete
+                      - deletecollection
+                  - apiGroups:
+                      - litmuschaos.io
+                    resources:
+                      - chaosengines
+                      - chaosexperiments
+                      - chaosresults
+                    verbs:
+                      - create
+                      - list
+                      - get
+                      - patch
+                      - update
+                      - delete
+                  - apiGroups:
+                      - ""
+                    resources:
+                      - nodes
+                    verbs:
+                      - get
+                      - list
+                image: docker.io/chaosnative/chaos-go-runner:1.15.1
+                imagePullPolicy: Always
+                args:
+                  - -c
+                  - ./experiments -name node-cpu-hog
+                command:
+                  - /bin/bash
+                env:
+                  - name: TOTAL_CHAOS_DURATION
+                    value: "60"
+                  - name: RAMP_TIME
+                    value: ""
+                  - name: NODE_CPU_CORE
+                    value: ""
+                  - name: CPU_LOAD
+                    value: "100"
+                  - name: TARGET_NODES
+                    value: ""
+                  - name: NODE_LABEL
+                    value: ""
+                  - name: LIB_IMAGE
+                    value: docker.io/chaosnative/chaos-go-runner:1.15.1
+                  - name: NODES_AFFECTED_PERC
+                    value: ""
+                  - name: SEQUENCE
+                    value: parallel
+                  - name: DEFAULT_HEALTH_CHECK
+                    value: "false"
+                labels:
+                  name: node-cpu-hog
+                  app.kubernetes.io/part-of: litmus
+                  app.kubernetes.io/component: experiment-job
+                  app.kubernetes.io/version: ci
+    metadata: {}
+    name: install-chaos-faults
+    outputs: {}
+  - container:
+      args:
+      - -file=/tmp/chaosengine-node-cpu-hog-epg.yaml
+      - -saveName=/tmp/engine-name
+      image: docker.io/chaosnative/litmus-checker:1.15.0
+      name: ""
+      resources: {}
+    inputs:
+      artifacts:
+      - name: node-cpu-hog-epg
+        path: /tmp/chaosengine-node-cpu-hog-epg.yaml
+        raw:
+          data: |
+            apiVersion: litmuschaos.io/v1alpha1
+            kind: ChaosEngine
+            metadata:
+              namespace: "{{workflow.parameters.adminModeNamespace}}"
+              generateName: node-cpu-hog-epg
+              labels:
+                instance_id: 87dd3922-d5bd-4994-b8b6-f27b0d28b849
+                workflow_name: node-cpu-hog-1658468946
+                workflow_run_id: "{{ workflow.uid }}"
+            spec:
+              engineState: active
+              auxiliaryAppInfo: ""
+              chaosServiceAccount: litmus-admin
+              experiments:
+                - name: node-cpu-hog
+                  spec:
+                    components:
+                      env:
+                        - name: TOTAL_CHAOS_DURATION
+                          value: "60"
+                        - name: NODE_CPU_CORE
+                          value: "1"
+                        - name: NODES_AFFECTED_PERC
+                          value: ""
+                        - name: TARGET_NODES
+                          value: ""
+                    probe:
+                      - name: healthcheck
+                        type: cmdProbe
+                        mode: Edge
+                        runProperties:
+                          probeTimeout: 180s
+                          retry: 0
+                          interval: 1s
+                          stopOnFailure: true
+                        cmdProbe/inputs:
+                          command: ./healthcheck -name node-level
+                          source:
+                            image: docker.io/chaosnative/chaos-go-runner:1.15.1
+                            inheritInputs: true
+                          comparator:
+                            type: string
+                            criteria: contains
+                            value: "[P000]"
+    metadata:
+      labels:
+        weight: "10"
+    name: node-cpu-hog-epg
+    outputs: {}
+  - container:
+      args:
+      - kubectl delete chaosengine -l workflow_run_id={{workflow.uid}} -n {{workflow.parameters.adminModeNamespace}}
+      command:
+      - sh
+      - -c
+      image: docker.io/chaosnative/k8s:1.15.0
+      name: ""
+      resources: {}
+    inputs: {}
+    metadata: {}
+    name: cleanup-chaos-resources
+    outputs: {}
+status:
+  finishedAt: null
+  startedAt: null

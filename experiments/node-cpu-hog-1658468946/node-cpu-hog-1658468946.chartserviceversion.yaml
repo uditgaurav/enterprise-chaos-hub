@@ -1,0 +1,33 @@
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChartServiceVersion
+metadata:
+  annotations:
+    categories: ""
+    chartDescription: ""
+    createdAt: ""
+    repository: ""
+    support: ""
+    vendor: ""
+  name: node-cpu-hog-1658468946
+packageInfo:
+  experiments: null
+  packageName: ""
+spec:
+  categoryDescription: Injects CPU hog (resource exhaustion) on the provided target
+    Kubernetes node
+  displayName: node-cpu-hog-1658468946
+  experiments: null
+  faults:
+  - description: ""
+    displayName: ""
+    name: node-cpu-hog-epg
+    plan: null
+  - description: ""
+    displayName: ""
+    name: node-cpu-hog-epg
+    plan: null
+  keywords: []
+  plan: null
+  provider:
+    name: ""
+  scenarios: null
