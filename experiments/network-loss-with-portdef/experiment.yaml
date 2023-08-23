@@ -162,7 +162,7 @@ spec:
                       - patch
                       - update
                       - delete
-                image: docker.io/chaosnative/chaos-go-runner:1.14.0
+                image: docker.io/chaosnative/chaos-go-runner:1.17.0
                 imagePullPolicy: Always
                 args:
                   - -c
@@ -173,7 +173,7 @@ spec:
                   - name: TARGET_CONTAINER
                     value: ""
                   - name: LIB_IMAGE
-                    value: docker.io/chaosnative/chaos-go-runner:1.14.0
+                    value: docker.io/chaosnative/chaos-go-runner:1.17.0
                   - name: NETWORK_INTERFACE
                     value: eth0
                   - name: TC_IMAGE
@@ -261,7 +261,7 @@ spec:
                         - name: TARGET_CONTAINER
                           value: ""
                         - name: LIB_IMAGE
-                          value: docker.io/chaosnative/chaos-go-runner:1.14.0
+                          value: docker.io/chaosnative/chaos-go-runner:1.17.0
                         - name: NETWORK_INTERFACE
                           value: eth0
                         - name: TC_IMAGE
@@ -302,7 +302,7 @@ spec:
                         cmdProbe/inputs:
                           command: ./healthcheck -name pod-level
                           source:
-                            image: docker.io/chaosnative/chaos-go-runner:1.14.0
+                            image: docker.io/chaosnative/chaos-go-runner:1.17.0
                             inheritInputs: true
                           comparator:
                             type: string

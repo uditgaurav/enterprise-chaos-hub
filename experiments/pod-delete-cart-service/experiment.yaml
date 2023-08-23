@@ -162,7 +162,7 @@ spec:
                       - patch
                       - update
                       - delete
-                image: docker.io/chaosnative/chaos-go-runner:1.14.0
+                image: docker.io/chaosnative/chaos-go-runner:1.17.0
                 imagePullPolicy: Always
                 args:
                   - -c
@@ -277,7 +277,7 @@ spec:
                         cmdProbe/inputs:
                           command: ./healthcheck -name pod-level
                           source:
-                            image: docker.io/chaosnative/chaos-go-runner:1.14.0
+                            image: docker.io/chaosnative/chaos-go-runner:1.17.0
                             inheritInputs: true
                           comparator:
                             type: string

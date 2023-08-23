@@ -159,7 +159,7 @@ spec:
                       - patch
                       - update
                       - delete
-                image: chaosnative/go-runner:1.14.0
+                image: chaosnative/go-runner:1.17.0
                 imagePullPolicy: Always
                 args:
                   - -c
@@ -178,7 +178,7 @@ spec:
                   - name: RAMP_TIME
                     value: ""
                   - name: LIB_IMAGE
-                    value: chaosnative/go-runner:1.14.0
+                    value: chaosnative/go-runner:1.17.0
                   - name: STRESS_IMAGE
                     value: alexeiled/stress-ng:latest-ubuntu
                   - name: CONTAINER_RUNTIME
@@ -260,7 +260,7 @@ spec:
                         cmdProbe/inputs:
                           command: ./healthcheck -name pod-level
                           source:
-                            image: chaosnative/go-runner:1.14.0
+                            image: chaosnative/go-runner:1.17.0
                             inheritInputs: true
                           comparator:
                             type: string

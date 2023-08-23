@@ -140,7 +140,7 @@ spec:
                     verbs:
                       - get
                       - list
-                image: docker.io/chaosnative/chaos-go-runner:1.15.1
+                image: docker.io/chaosnative/chaos-go-runner:1.17.0
                 imagePullPolicy: Always
                 args:
                   - -c
@@ -161,7 +161,7 @@ spec:
                   - name: NODE_LABEL
                     value: ""
                   - name: LIB_IMAGE
-                    value: docker.io/chaosnative/chaos-go-runner:1.15.1
+                    value: docker.io/chaosnative/chaos-go-runner:1.17.0
                   - name: NODES_AFFECTED_PERC
                     value: ""
                   - name: SEQUENCE
@@ -227,7 +227,7 @@ spec:
                         cmdProbe/inputs:
                           command: ./healthcheck -name node-level
                           source:
-                            image: docker.io/chaosnative/chaos-go-runner:1.15.1
+                            image: docker.io/chaosnative/chaos-go-runner:1.17.0
                             inheritInputs: true
                           comparator:
                             type: string
